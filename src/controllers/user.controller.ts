@@ -1,20 +1,20 @@
 import { Request, Response } from 'express';
-import { Usuario } from '../models/usuario.model';
+import { User } from '../models/user.model';
 
-export const obtenerDetallesUsuario = async (req: Request, res: Response): Promise<void> => {
+export const getUserDetails = async (req: Request, res: Response): Promise<void> => {
   try {
-    const usuarioId = (req as any).usuarioId; // Obtener el _id del usuario del objeto req
+    const userId = (req as any).userId; 
 
-    const usuario = await Usuario.findById(usuarioId).select('-contraseña');
+    const user = await User.findById(userId).select('-password');
 
-    if (!usuario) {
-      res.status(404).json({ message: 'Usuario no encontrado' });
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
       return;
     }
 
-    res.json(usuario);
+    res.json(user);
   } catch (error: any) {
     console.error(error.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).send('Server Error');
   }
 };

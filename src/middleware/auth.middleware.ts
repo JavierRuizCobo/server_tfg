@@ -1,28 +1,30 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { Usuario } from '../models/usuario.model';
+import { User } from '../models/user.model';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  // Obtener el token del encabezado Authorization
   const authHeader = req.headers['authorization'];
 
-  // Verificar si no hay token
+  console.log(authHeader);
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'No hay token, autorización denegada' });
+    res.status(401).json({ message: 'No token provided, authorization denied' });
     return;
   }
 
-  const token = authHeader.split(' ')[1];
+  // const token = authHeader.split(' ')[1];
+
+  const token = req.cookies.token;
+
+  console.log(token);
 
   try {
-    // Verificar el token
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'jwtsecret');
 
-    // Almacenar el _id del usuario en el objeto req
-    (req as any).usuarioId = decoded.usuario.id;
+    (req as any).userId = decoded.user.id;
 
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token no válido' });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };

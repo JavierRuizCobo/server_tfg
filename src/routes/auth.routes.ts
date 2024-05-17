@@ -1,10 +1,11 @@
 import express from 'express';
-import { registrarUsuario, iniciarSesion } from '../controllers/auth.controllers';
+import { registerUser, login, isAuthenticated } from '../controllers/auth.controllers';
+import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
-// Rutas de autenticación
-router.post('/registrar', registrarUsuario);
-router.post('/iniciar-sesion', iniciarSesion);
+router.post('/registrar', registerUser);
+router.post('/iniciar-sesion', login);
+router.get('/esta-autenticado', authMiddleware, isAuthenticated);
 
 export default router;

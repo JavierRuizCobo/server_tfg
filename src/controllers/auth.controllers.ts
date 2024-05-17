@@ -1,76 +1,76 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { Usuario } from '../models/usuario.model';
+import { User } from '../models/user.model';
 
-export const registrarUsuario = async (req: Request, res: Response): Promise<void> => {
-  const { nombre, apellido, correo, contraseña, rol } = req.body;
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
+  const { name, lastName, email, password, role } = req.body;
 
   try {
-    // Verificar si el usuario ya existe
-    let usuario = await Usuario.findOne({ correo });
+    let user = await User.findOne({ email });
 
-    if (usuario) {
-      res.status(400).json({ message: 'El usuario ya existe' });
+    if (user) {
+      res.status(400).json({ message: 'User already exists' });
       return;
     }
 
-    // Crear un nuevo usuario
-    usuario = new Usuario({
-      nombre,
-      apellido,
-      correo,
-      contraseña, 
-      rol
+    user = new User({
+      name,
+      lastName,
+      email,
+      password, 
+      role
     });
 
-    // Encriptar la contraseña
     const salt = await bcrypt.genSalt(10);
-    usuario.contraseña = await bcrypt.hash(contraseña, salt);
+    user.password = await bcrypt.hash(password, salt);
 
-    // Guardar el usuario en la base de datos
-    await usuario.save();
+    await user.save();
 
-    res.json({ message: 'Usuario registrado exitosamente' });
+    res.json({ message: 'User registered successfully' });
   } catch (error: any) {
     console.error(error.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).send('Server Error');
   }
 };
 
-export const iniciarSesion = async (req: Request, res: Response): Promise<void> => {
-  const { correo, contraseña } = req.body;
+export const login = async (req: Request, res: Response): Promise<void> => {
+  console.log(req.body)
+  const { email, password } = req.body;
 
   try {
-    // Verificar si el usuario existe
-    const usuario = await Usuario.findOne({ correo });
+    const user = await User.findOne({ email });
 
-    if (!usuario) {
-      res.status(400).json({ message: 'Credenciales inválidas' });
+    if (!user) {
+      res.status(400).json({ message: 'Invalid credentials' });
       return;
     }
 
-    // Verificar la contraseña
-    const esContraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!esContraseñaValida) {
-      res.status(400).json({ message: 'Credenciales inválidas' });
+    if (!isPasswordValid) {
+      res.status(400).json({ message: 'Invalid credentials' });
       return;
     }
 
-    // Crear y enviar token de acceso
     const payload = {
-      usuario: {
-        id: usuario._id
+      user: {
+        id: user._id
       }
     };
 
     jwt.sign(payload, process.env.JWT_SECRET || 'jwtsecret', { expiresIn: '1h' }, (error, token) => {
       if (error) throw error;
-      res.json({ token });
+      res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // Set HTTPOnly cookie here
+      res.json({ message: 'Login successful' }); // Send an object with token property here
     });
-  } catch (error : any) {
+  } catch (error: any) {
     console.error(error.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).send('Server Error');
   }
 };
+
+export const isAuthenticated = (req: Request, res: Response): void => {
+  res.status(200).json(true);
+};
+
