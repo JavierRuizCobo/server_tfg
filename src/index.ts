@@ -6,6 +6,7 @@ import postRouter from './routes/posts.routes';
 import exerciseRouter from './routes/exercise.routes';
 
 import cors from 'cors';
+import mailRoutes from './routes/mail.routes';
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,8 @@ app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/posts', postRouter);
 app.use('/exercises', exerciseRouter);
+app.use('/mail', mailRoutes);
+
 
 
 const PORT = process.env.PORT || 3000;
