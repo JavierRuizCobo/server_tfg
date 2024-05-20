@@ -4,6 +4,8 @@ import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
 import postRouter from './routes/posts.routes';
 import exerciseRouter from './routes/exercise.routes';
+import routinesRouter from './routes/routines.routes';
+import plannedRoutinesRouter from './routes/plannedRoutines.routes';
 
 import cors from 'cors';
 import mailRoutes from './routes/mail.routes';
@@ -23,6 +25,8 @@ app.use('/user', userRouter);
 app.use('/posts', postRouter);
 app.use('/exercises', exerciseRouter);
 app.use('/mail', mailRoutes);
+app.use('/routines', routinesRouter)
+app.use('/planned-routines', plannedRoutinesRouter)
 
 
 

@@ -1,6 +1,7 @@
 import { Schema, Document, model, Types } from 'mongoose';
 
-interface ExerciseDocument extends Document {
+export interface ExerciseDocument extends Document {
+    exercise_id: any;
     name: string;
     description: string;
     difficulty: string;
@@ -21,7 +22,6 @@ const exerciseSchema = new Schema<ExerciseDocument>({
     created_by: { type: Schema.Types.ObjectId, ref: 'User', required: false },
     creation_date: { type: Date, default: Date.now }
 });
-
 
 const Exercise = model<ExerciseDocument>('Exercise', exerciseSchema);
 

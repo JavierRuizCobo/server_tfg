@@ -5,7 +5,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const sendMail = async (req: Request, res: Response) => {
-  const { to, subject, text } = req.body;
+  const { subject, message } = req.body;
+
+
+  // Usuarios con rol monitor o coordinador
+  const to = "";
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -19,7 +23,7 @@ export const sendMail = async (req: Request, res: Response) => {
     from: process.env.EMAIL_USER,
     to,
     subject,
-    text
+    text: message
   };
 
   try {

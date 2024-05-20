@@ -7,7 +7,7 @@ interface UserInterface extends Document {
   password: string;
   role: string;
   creationDate: Date;
-  active: boolean;
+  active : boolean;
 }
 
 const userSchema: Schema = new Schema({
