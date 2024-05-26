@@ -1,6 +1,6 @@
 import express from 'express';
-import { registerUser, login, isAuthenticated } from '../controllers/auth.controllers';
-import { authMiddleware, hasRole } from '../middleware/auth.middleware';
+import { registerUser, login, isAuthenticated, logout } from '../controllers/auth.controllers';
+import { authMiddleware, checkRolesFromQuery, hasRole } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
@@ -20,9 +20,15 @@ router.get('/rol/user', authMiddleware, hasRole(['user']), (req, res) => {
     res.status(200).json({ authorized: true });
   });
   
-  router.get('/rol/coordinador', authMiddleware, hasRole(['coordinador']), (req, res) => {
+  router.get('/rol/coordinador', authMiddleware, hasRole(['coordinator']), (req, res) => {
     console.log("E");
     res.status(200).json({ authorized: true });
   });
+
+  router.get('/comprobar-roles', authMiddleware, checkRolesFromQuery, (req, res) => {
+    res.status(200).json({ authorized: true });
+  });
+
+  router.post('/cerrar-sesion',authMiddleware, logout);
 
 export default router;

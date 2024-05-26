@@ -34,7 +34,19 @@ export const hasRole = (roles: string[]) => {
     if (roles.includes(userRole)) {
       next();
     } else {
-      res.status(403).json({ authorized: false, message: 'Forbidden: Insufficient role' });
+      res.status(403).json({ authorized: false, message: 'Forbidden: Insufficient role', rol: userRole });
     }
   };
+};
+
+export const checkRolesFromQuery = (req: Request, res: Response, next: NextFunction) => {
+  const roles = req.query.roles?.toString().split(',') || [];
+  const userRole = (req as any).userRole;
+
+
+  if (roles.includes(userRole)) {
+    next();
+  } else {
+    res.status(403).json({ authorized: false, message: 'Forbidden: Insufficient role', rol: userRole });
+  }
 };

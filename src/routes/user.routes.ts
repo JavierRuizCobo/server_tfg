@@ -16,14 +16,14 @@ import {
 
 const router = express.Router();
 
-router.get('/', [authMiddleware, hasRole(['monitor, coordinador'])], getUsers);
+router.get('/', [authMiddleware, hasRole(['monitor','coordinator'])], getUsers);
 
 router.get('/detalles', authMiddleware, getUserDetails);
 
-router.post('/', [authMiddleware, hasRole(['coordinador'])], createUserValidation, validate, createUser);
+router.post('/', [authMiddleware, hasRole(['coordinator'])], createUserValidation, validate, createUser);
 
-router.put('/:id', [authMiddleware, hasRole(['coordinador'])], updateUserValidation, validate, updateUser);
+router.put('/:id', [authMiddleware, hasRole(['coordinator'])], updateUserValidation, validate, updateUser);
 
-router.delete('/:id', [authMiddleware, hasRole(['coordinador'])], deleteUserValidation, validate, deleteUser);
+router.delete('/:id', [authMiddleware, hasRole(['coordinator'])], deleteUserValidation, validate, deleteUser);
 
 export default router;

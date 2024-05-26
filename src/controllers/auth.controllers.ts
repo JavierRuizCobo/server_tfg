@@ -72,3 +72,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const isAuthenticated = (req: Request, res: Response): void => {
   res.status(200).json({ authenticated: true});
 };
+
+export const logout = (req: Request, res: Response): void => {
+  // Eliminar la cookie de sesión
+  res.clearCookie('token', { httpOnly: true });
+  res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+};
