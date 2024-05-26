@@ -4,12 +4,15 @@ import {
   updatePlannedRoutine,
   getAllPlannedRoutines,
   deletePlannedRoutine,
-  getPlannedRoutinesByRoutineId
+  getPlannedRoutinesByRoutineId,
+  getPlannedRoutineById
 } from '../controllers/plannedRoutines.controllers';
 
 const router = Router();
 
 router.post('/', createPlannedRoutine);
+
+router.get('/:id', getPlannedRoutineById)
 
 router.put('/:id', updatePlannedRoutine);
 

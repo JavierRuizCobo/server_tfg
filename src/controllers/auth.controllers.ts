@@ -18,7 +18,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       name,
       lastName,
       email,
-      password, 
+      password,
       role
     });
 
@@ -35,7 +35,6 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.body)
   const { email, password } = req.body;
 
   try {
@@ -61,8 +60,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     jwt.sign(payload, process.env.JWT_SECRET || 'jwtsecret', { expiresIn: '1h' }, (error, token) => {
       if (error) throw error;
-      res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // Set HTTPOnly cookie here
-      res.json({ message: 'Login successful' }); // Send an object with token property here
+      res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 3600000 }); // Asegúrate de usar `secure: true` en producción
+      res.json({ message: 'Login successful' });
     });
   } catch (error: any) {
     console.error(error.message);
@@ -71,6 +70,5 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const isAuthenticated = (req: Request, res: Response): void => {
-  res.status(200).json(true);
+  res.status(200).json({ authenticated: true});
 };
-

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PlannedRoutine } from '../models/plannedRoutine.model';
+import mongoose from 'mongoose';
 
 export const createPlannedRoutine = async (req: Request, res: Response) => {
   try {
@@ -18,8 +19,10 @@ export const createPlannedRoutine = async (req: Request, res: Response) => {
 
 export const updatePlannedRoutine = async (req: Request, res: Response) => {
   try {
+
+    console.log("HOla");
     const { id } = req.params;
-    const updatedPlannedRoutine = await PlannedRoutine.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedPlannedRoutine = await PlannedRoutine.findByIdAndUpdate(id, req.body);
     if (!updatedPlannedRoutine) {
       return res.status(404).json({ message: 'Planned routine not found' });
     }
@@ -68,5 +71,34 @@ export const getPlannedRoutinesByRoutineId = async (req: Request, res: Response)
     res.status(200).json(plannedRoutines);
   } catch (error) {
     res.status(500).json({ message: 'Error getting planned routines by routineId', error });
+  }
+};
+
+export const getPlannedRoutineById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Validar que el id sea un ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
+    // Buscar la rutina planificada por ID
+    const plannedRoutine = await PlannedRoutine.findById(id).populate('exercises.exerciseId').lean();
+    if (!plannedRoutine) {
+      return res.status(404).json({ message: 'Planned routine not found' });
+    }
+
+    // Mapear los ejercicios para devolver la estructura correcta
+    plannedRoutine.exercises = plannedRoutine.exercises.map((exerciseItem: any) => ({
+      exerciseId: exerciseItem.exerciseId,
+      exercise: exerciseItem.exerciseId,
+      series: exerciseItem.series
+    }));
+
+    res.status(200).json(plannedRoutine);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error getting planned routine by ID', error });
   }
 };

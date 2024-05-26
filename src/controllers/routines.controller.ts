@@ -5,32 +5,55 @@ import { Types } from 'mongoose';
 
 export const getAllRoutines = async (req: Request, res: Response) => {
   try {
-    const routines = await Routine.find();
+    const userId = (req as any).userId;
+    const selectedUserId = req.query.userId as string;
+
+    console.log(userId)
+    console.log(selectedUserId)
+
+    let routines;
+    if (selectedUserId) {
+      // Si el usuario es un monitor y se proporciona un userId, obtener rutinas de ese usuario
+      routines = await Routine.find({
+        $or: [
+          { created_by: selectedUserId },
+          { assigned_to: selectedUserId }
+        ]
+      });
+    } else {
+      // Si no, obtener rutinas del usuario autenticado
+      routines = await Routine.find({
+        $or: [
+          { created_by: userId },
+          { assigned_to: userId }
+        ]
+      });
+    }
+
     res.json(routines);
-  } catch (err : any) {
+  } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
+
 export const createRoutine = async (req: Request, res: Response) => {
   try {
-    const { name, description, exercises, creation_date} = req.body;
+    const { name, description, exercises, creation_date, assigned_to } = req.body;
+    const created_by = (req as any).userId;
 
-    const created_by = "6648e8954da354bde5d8de5e";
-
-    exercises.map((exerciseId: string) => new Types.ObjectId(exerciseId));
+    const exercisesIds = exercises.map((exerciseId: string) => new Types.ObjectId(exerciseId));
 
     const newRoutine = new Routine({
       name,
       description,
-      exercises,
+      exercises: exercisesIds,
       created_by,
+      assigned_to: assigned_to ? new Types.ObjectId(assigned_to) : null,
       creation_date,
     });
 
     const savedRoutine = await newRoutine.save();
-
-    console.log(savedRoutine);
 
     res.status(201).json(savedRoutine);
   } catch (err : any) {
@@ -45,22 +68,16 @@ export const getRoutineById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Routine not found' });
     }
 
-    // Obtener los nombres de los ejercicios
     const exerciseIds = routine.exercises;
     const exercises = await Exercise.find({ _id: { $in: exerciseIds } });
-    
-    // Mapear los nombres de los ejercicios al formato deseado
     const exerciseNames = exercises.map(exercise => ({
       _id: exercise._id,
       name: exercise.name,
-      // Puedes incluir otros campos de los ejercicios si los necesitas
     }));
 
-    // Construir la respuesta con el nombre de los ejercicios
     const routineWithExerciseNames = {
       _id: routine._id,
       name: routine.name,
-      // Agregar otros campos de la rutina si es necesario
       exercises: exerciseNames,
     };
 
@@ -69,6 +86,7 @@ export const getRoutineById = async (req: Request, res: Response) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 export const deleteRoutineById = async (req: Request, res: Response) => {
   try {

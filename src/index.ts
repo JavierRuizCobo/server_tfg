@@ -6,12 +6,16 @@ import postRouter from './routes/posts.routes';
 import exerciseRouter from './routes/exercise.routes';
 import routinesRouter from './routes/routines.routes';
 import plannedRoutinesRouter from './routes/plannedRoutines.routes';
+import cookieParser from 'cookie-parser';
+
 
 import cors from 'cors';
 import mailRoutes from './routes/mail.routes';
 
 const app = express();
 app.use(express.json());
+
+app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true
