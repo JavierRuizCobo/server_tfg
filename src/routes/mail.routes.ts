@@ -4,6 +4,6 @@ import { authMiddleware, hasRole } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.post('/send', [authMiddleware, hasRole(['usuario'])],sendMail);
+router.post('/send', [authMiddleware, hasRole(['user'])],sendMail);
 
 export default router;

@@ -6,10 +6,10 @@ import { Types } from 'mongoose';
 export const getAllRoutines = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const selectedUserId = req.query.userId as string;
+    const selectedUserId = req.query.selectUserId as string;
 
-    console.log(userId)
-    console.log(selectedUserId)
+    console.log("Auth user:   " + userId)
+    console.log("Select user:  " + selectedUserId)
 
     let routines;
     if (selectedUserId) {
@@ -44,12 +44,14 @@ export const createRoutine = async (req: Request, res: Response) => {
 
     const exercisesIds = exercises.map((exerciseId: string) => new Types.ObjectId(exerciseId));
 
+    console.log(assigned_to);
+
     const newRoutine = new Routine({
       name,
       description,
       exercises: exercisesIds,
       created_by,
-      assigned_to: assigned_to ? new Types.ObjectId(assigned_to) : null,
+      assigned_to: assigned_to ? Types.ObjectId.createFromHexString(assigned_to) : null,
       creation_date,
     });
 

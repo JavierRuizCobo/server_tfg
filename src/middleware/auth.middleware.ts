@@ -43,6 +43,8 @@ export const checkRolesFromQuery = (req: Request, res: Response, next: NextFunct
   const roles = req.query.roles?.toString().split(',') || [];
   const userRole = (req as any).userRole;
 
+  console.log(roles);
+
 
   if (roles.includes(userRole)) {
     next();

@@ -18,7 +18,6 @@ interface IPlannedRoutine extends Document {
 }
 
 const PlannedRoutineSchema: Schema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: false },//
   routineId: { type: Schema.Types.ObjectId, required: true },
   date: { type: Date, required: true },
   completed: { type: Boolean, default: false },
@@ -30,7 +29,7 @@ const PlannedRoutineSchema: Schema = new Schema({
     }],
   }],
   notes: { type: String, default: '' },
-  createdBy: { type: Schema.Types.ObjectId, required: false },//
+  createdBy: { type: Schema.Types.ObjectId, required: true },
   creationDate: { type: Date, default: Date.now }
 });
 

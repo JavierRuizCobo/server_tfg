@@ -6,6 +6,7 @@ export interface IRoutine extends Document {
   description: string;
   exercises: Types.ObjectId[];
   created_by: Types.ObjectId;
+  assigned_to?: Types.ObjectId;
   creation_date: Date;
   modified_by?: Types.ObjectId;
 }
@@ -23,11 +24,15 @@ const routineSchema = new Schema<IRoutine>({
     type: Schema.Types.ObjectId,
     ref: 'Exercise',
     required: true
-  }], 
+  }],
   created_by: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  assigned_to: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   creation_date: {
     type: Date,

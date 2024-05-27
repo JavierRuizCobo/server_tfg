@@ -7,7 +7,14 @@ export const createPlannedRoutine = async (req: Request, res: Response) => {
 
     console.log(req.body);
 
-    const plannedRoutine = new PlannedRoutine(req.body);
+    const created_by = (req as any).userId;
+
+    const routineData = {
+      ...req.body,
+      createdBy: created_by
+    };
+
+    const plannedRoutine = new PlannedRoutine(routineData);
 
     await plannedRoutine.save();
     res.status(201).json(plannedRoutine);
@@ -20,7 +27,6 @@ export const createPlannedRoutine = async (req: Request, res: Response) => {
 export const updatePlannedRoutine = async (req: Request, res: Response) => {
   try {
 
-    console.log("HOla");
     const { id } = req.params;
     const updatedPlannedRoutine = await PlannedRoutine.findByIdAndUpdate(id, req.body);
     if (!updatedPlannedRoutine) {

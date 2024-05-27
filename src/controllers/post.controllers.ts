@@ -4,8 +4,7 @@ import { HealthyHabitsModel } from '../models/post.model';
 export async function addPost(req: Request, res: Response): Promise<void> {
     try {
         const { title, content } = req.body;
-        console.log(req.body);
-        const created_by = "yo";
+        const created_by = (req as any).userId;
         const newPost = await HealthyHabitsModel.create({ title, content, created_by });
         res.status(201).json(newPost);
     } catch (error : any) {
