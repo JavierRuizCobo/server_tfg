@@ -80,6 +80,7 @@ export const getRoutineById = async (req: Request, res: Response) => {
     const routineWithExerciseNames = {
       _id: routine._id,
       name: routine.name,
+      description: routine.description,
       exercises: exerciseNames,
     };
 
