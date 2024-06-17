@@ -5,13 +5,14 @@ import { User } from '../models/user.model';
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const token = req.cookies.token;
 
+
   if (!token) {
     res.status(401).json({ message: 'No token provided, authorization denied' });
     return;
   }
 
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'jwtsecret');
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'clave_Segura');
     const user = await User.findById(decoded.user.id);
 
     if (!user) {
@@ -43,7 +44,6 @@ export const checkRolesFromQuery = (req: Request, res: Response, next: NextFunct
   const roles = req.query.roles?.toString().split(',') || [];
   const userRole = (req as any).userRole;
 
-  console.log(roles);
 
 
   if (roles.includes(userRole)) {

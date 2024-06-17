@@ -37,8 +37,6 @@ export const getExerciseById = async (req: Request, res: Response) => {
 export const deleteExerciseById = async (req: Request, res: Response) => {
     const _id = req.params.id;
 
-    console.log(_id);
-
     try {
         const exercise = await Exercise.findByIdAndDelete(_id);
         if (!exercise) {
@@ -47,5 +45,19 @@ export const deleteExerciseById = async (req: Request, res: Response) => {
         res.send(exercise);
     } catch (error) {
         res.status(500).send(error);
+    }
+};
+
+export const updateExerciseById = async (req: Request, res: Response) => {
+    const _id = req.params.id;
+
+    try {
+        const exercise = await Exercise.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+        if (!exercise) {
+            return res.status(404).send();
+        }
+        res.send(exercise);
+    } catch (error) {
+        res.status(400).send(error);
     }
 };

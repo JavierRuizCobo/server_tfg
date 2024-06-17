@@ -4,10 +4,16 @@ import mongoose from 'mongoose';
 
 export const createPlannedRoutine = async (req: Request, res: Response) => {
   try {
-
-    console.log(req.body);
-
     const created_by = (req as any).userId;
+
+    const { routineId, date } = req.body;
+
+    const existingRoutine = await PlannedRoutine.findOne({ routineId: routineId, date });
+
+    if (existingRoutine) {
+      return res.status(400).json({ message: 'Ya existe una rutina planificada para ese día' });
+    }
+
 
     const routineData = {
       ...req.body,
@@ -15,7 +21,6 @@ export const createPlannedRoutine = async (req: Request, res: Response) => {
     };
 
     const plannedRoutine = new PlannedRoutine(routineData);
-
     await plannedRoutine.save();
     res.status(201).json(plannedRoutine);
   } catch (error) {
@@ -26,9 +31,8 @@ export const createPlannedRoutine = async (req: Request, res: Response) => {
 
 export const updatePlannedRoutine = async (req: Request, res: Response) => {
   try {
-
     const { id } = req.params;
-    const updatedPlannedRoutine = await PlannedRoutine.findByIdAndUpdate(id, req.body);
+    const updatedPlannedRoutine = await PlannedRoutine.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
     if (!updatedPlannedRoutine) {
       return res.status(404).json({ message: 'Planned routine not found' });
     }
@@ -40,7 +44,13 @@ export const updatePlannedRoutine = async (req: Request, res: Response) => {
 
 export const getAllPlannedRoutines = async (req: Request, res: Response) => {
   try {
-    const plannedRoutines = await PlannedRoutine.find();
+    const plannedRoutines = await PlannedRoutine.find().populate('exercises.exerciseId').lean();
+    plannedRoutines.forEach((routine: any) => {
+      routine.exercises = routine.exercises.map((exerciseItem: any) => ({
+        exercise: exerciseItem.exerciseId,
+        series: exerciseItem.series
+      }));
+    });
     res.status(200).json(plannedRoutines);
   } catch (error) {
     res.status(500).json({ message: 'Error getting planned routines', error });
@@ -59,7 +69,6 @@ export const deletePlannedRoutine = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error deleting planned routine', error });
   }
 };
-
 
 export const getPlannedRoutinesByRoutineId = async (req: Request, res: Response) => {
   try {
@@ -84,20 +93,18 @@ export const getPlannedRoutineById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Validar que el id sea un ObjectId válido
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    // Buscar la rutina planificada por ID
     const plannedRoutine = await PlannedRoutine.findById(id).populate('exercises.exerciseId').lean();
     if (!plannedRoutine) {
       return res.status(404).json({ message: 'Planned routine not found' });
     }
 
-    // Mapear los ejercicios para devolver la estructura correcta
+    //Darle una vuelta
     plannedRoutine.exercises = plannedRoutine.exercises.map((exerciseItem: any) => ({
-      exerciseId: exerciseItem.exerciseId,
+      exerciseId: exerciseItem.exerciseId._id,
       exercise: exerciseItem.exerciseId,
       series: exerciseItem.series
     }));

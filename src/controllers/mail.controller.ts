@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { User } from '../models/user.model';
 
 dotenv.config();
 
@@ -8,7 +9,10 @@ export const sendMail = async (req: Request, res: Response) => {
   const { subject, message } = req.body;
 
   // Usuarios con rol monitor o coordinador
-  const to = "javircrc10@gmail.com";
+  // const to = "javircrc10@gmail.com";
+
+  const users = await User.find({ role: { $in: ['monitor', 'coordinator'] }, active: true }, 'email');
+  const to = users.map(user => user.email).join(',');
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

@@ -10,9 +10,9 @@ import { authMiddleware, hasRole } from '../middleware/auth.middleware';
 import { 
   createUserValidation, 
   updateUserValidation, 
-  deleteUserValidation, 
-  validate 
+  deleteUserValidation 
 } from '../middleware/userValidate.middleware';
+import { validate } from '../middleware/handleValidations.middleware';
 
 const router = express.Router();
 

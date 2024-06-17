@@ -1,12 +1,50 @@
 import express from 'express';
-import * as exerciseController from '../controllers/exercise.controller';
 import { authMiddleware, hasRole } from '../middleware/auth.middleware';
+import { validateExercise, validateExerciseId } from '../middleware/exerciseValidate.middleware';
+import { validate } from '../middleware/handleValidations.middleware';
+import { addExercise, deleteExerciseById, getAllExercises, getExerciseById, updateExerciseById } from '../controllers/exercise.controller';
 
 const router = express.Router();
 
-router.post('',[authMiddleware, hasRole(['monitor', 'coordinator'])], exerciseController.addExercise);
-router.get('', authMiddleware, exerciseController.getAllExercises);
-router.get('/:id',authMiddleware,  exerciseController.getExerciseById);
-router.delete('/:id',[authMiddleware, hasRole(['monitor', 'coordinator'])], exerciseController.deleteExerciseById);
+router.post(
+    '',
+    authMiddleware,
+    hasRole(['monitor', 'coordinator']),
+    validateExercise,
+    validate,
+    addExercise
+);
+
+router.get(
+    '',
+    authMiddleware,
+    getAllExercises
+);
+
+router.get(
+    '/:id',
+    authMiddleware,
+    validateExerciseId,
+    validate,
+    getExerciseById
+);
+
+router.delete(
+    '/:id',
+    authMiddleware,
+    hasRole(['monitor', 'coordinator']),
+    validateExerciseId,
+    validate,
+    deleteExerciseById
+);
+
+
+router.put('/:id', 
+    [authMiddleware, hasRole(['monitor', 'coordinator'])],
+    validateExerciseId,
+    validateExercise,
+    validate, 
+    updateExerciseById
+);
 
 export default router;

@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IPlannedRoutine extends Document {
-  userId: mongoose.Types.ObjectId;
   routineId: mongoose.Types.ObjectId;
   date: Date;
   completed: boolean;
@@ -12,7 +11,6 @@ interface IPlannedRoutine extends Document {
       weight: number;
     }[];
   }[];
-  notes: string;
   createdBy: mongoose.Types.ObjectId;
   creationDate: Date;
 }
@@ -28,7 +26,6 @@ const PlannedRoutineSchema: Schema = new Schema({
       weight: { type: Number, required: true }
     }],
   }],
-  notes: { type: String, default: '' },
   createdBy: { type: Schema.Types.ObjectId, required: true },
   creationDate: { type: Date, default: Date.now }
 });
