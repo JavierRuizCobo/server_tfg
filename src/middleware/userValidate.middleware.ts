@@ -1,6 +1,5 @@
 import { check } from 'express-validator';
 
-// Validaciones para crear usuario
 export const createUserValidation = [
   check('name', 'Name is required').not().isEmpty(),
   check('lastName', 'Last name is required').not().isEmpty(),
@@ -10,7 +9,6 @@ export const createUserValidation = [
   check('role', 'Invalid role').isIn(['user', 'monitor', 'coordinator'])
 ];
 
-// Validaciones para actualizar usuario
 export const updateUserValidation = [
   check('name', 'Name is required').optional().not().isEmpty(),
   check('lastName', 'Last name is required').optional().not().isEmpty(),
@@ -20,7 +18,6 @@ export const updateUserValidation = [
   check('role', 'Invalid role').optional().isIn(['user', 'monitor', 'coordinator'])
 ];
 
-// Validaciones para eliminar usuario
 export const deleteUserValidation = [
   check('id', 'Valid ID is required').isMongoId()
 ];
