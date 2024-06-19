@@ -4,18 +4,17 @@ import { authMiddleware, checkRolesFromQuery, hasRole } from '../middleware/auth
 
 const router = express.Router();
 
-router.post('/iniciar-sesion', login);
-router.get('/esta-autenticado', authMiddleware, isAuthenticated);
-router.post('/activar-cuenta', activateAccount);
-router.post('/desactivar-cuenta',[authMiddleware, hasRole(['coordinator'])], desactivateAccount);
-router.post('/enviar-correo-activacion',[authMiddleware, hasRole(['coordinator'])], sendActivationEmail);
+router.post('/login', login);
+router.get('/is-authenticated', authMiddleware, isAuthenticated);
+router.post('/activate-account', activateAccount);
+router.post('/desactivate-account', [authMiddleware, hasRole(['coordinator'])], desactivateAccount);
+router.post('/send-activation-email', [authMiddleware, hasRole(['coordinator'])], sendActivationEmail);
 
-
-
-router.get('/comprobar-roles', authMiddleware, checkRolesFromQuery, (req, res) => {
+router.get('/check-roles', authMiddleware, checkRolesFromQuery, (req, res) => {
   res.status(200).json({ authorized: true });
 });
 
-router.post('/cerrar-sesion',authMiddleware, logout);
+router.post('/logout', authMiddleware, logout);
+
 
 export default router;

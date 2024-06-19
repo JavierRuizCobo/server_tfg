@@ -65,7 +65,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       }
     },JWT_SECRET, { expiresIn: '24h' });
 
-    // Envía el token por correo electrónico
     sendActivationEmail(email, token);
 
     res.status(201).json(newUser);
@@ -77,7 +76,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
 
 const sendActivationEmail = (email: any, token: any) => {
-  // Crea un transporte de correo electrónico utilizando nodemailer
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -86,7 +84,6 @@ const sendActivationEmail = (email: any, token: any) => {
     }
   });
 
-  // Construye el cuerpo del correo electrónico
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -94,7 +91,6 @@ const sendActivationEmail = (email: any, token: any) => {
     text: `Por favor, haga clic en el siguiente enlace para activar su cuenta: http://localhost:4200/activar-cuenta?token=${token}`
   };
 
-  // Envía el correo electrónico
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error('Error al enviar el correo electrónico:', error);
@@ -105,13 +101,11 @@ const sendActivationEmail = (email: any, token: any) => {
 };
 
 
-// Controlador para actualizar un usuario existente
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.id;
     const updates = req.body;
 
-    // Si se está actualizando la contraseña, hay que hashearla
     if (updates.password) {
       const salt = await bcrypt.genSalt(10);
       updates.password = await bcrypt.hash(updates.password, salt);
@@ -131,7 +125,6 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Controlador para eliminar un usuario existente
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.id;

@@ -3,7 +3,16 @@ import Exercise from '../models/exercise.models';
 
 export const addExercise = async (req: Request, res: Response) => {
     try {
-        const exercise = new Exercise(req.body);
+        const created_by = (req as any).userId;
+
+        const exerciseData = {
+            ...req.body,
+            created_by: created_by
+          };
+
+        console.log(exerciseData);
+        const exercise = new Exercise(exerciseData);
+
         await exercise.save();
         res.status(201).send(exercise);
     } catch (error) {

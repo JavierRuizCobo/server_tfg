@@ -13,10 +13,8 @@ export const activateAccount = async (req: Request, res: Response) => {
   const { token, email, password } = req.body;
 
   try {
-    // Verificar el token
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'clave_Segura');
 
-    // El token es válido, busca al usuario por _id
     const user = await User.findById(decoded.user.id);
 
     if (!user) {
@@ -24,13 +22,11 @@ export const activateAccount = async (req: Request, res: Response) => {
       return;
     }
 
-    // Verificar el correo electrónico y la contraseña
     if (user.email !== email || !(await bcrypt.compare(password, user.password))) {
       res.status(401).json({ message: 'Invalid email or password' });
       return;
     }
 
-    // Marcar la cuenta como activa
     user.active = true;
     await user.save();
 
@@ -86,14 +82,18 @@ export const sendActivationEmail = async (req: Request, res: Response) => {
         id: user._id
       }
     },JWT_SECRET, { expiresIn: '24h' });
-    const activationLink = `http://localhost:4200/activar-cuenta?token=${token}`;
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:4200';
+
+    const activationLink = `${baseUrl}/activar-cuenta?token=${token}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: 'Account Activation',
-      text: `Please click the following link to activate your account: ${activationLink}`,
-      html: `<p>Please click the following link to activate your account:</p><p><a href="${activationLink}">${activationLink}</a></p>`,
+      subject: 'Activación de cuenta',
+      text: `Por favor haz clic en el siguiente enlace para activar tu cuenta: ${activationLink}`,
+      html: `<p>Por favor haz clic en el siguiente enlace para activar tu cuenta:</p><p><a href="${activationLink}">${activationLink}</a></p>`,
+
     };
 
     await transporter.sendMail(mailOptions);
@@ -138,7 +138,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     jwt.sign(payload, JWT_SECRET, { expiresIn: '1h', algorithm: 'HS512' }, (error, token) => {
       if (error) throw error;
-      res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 3600000, secure: true });
+      res.cookie('token', token, { httpOnly: true, sameSite: "none", maxAge: 3600000, secure: true});
       res.json({ message: 'Login successful' });
     });
   } catch (error: any) {
@@ -152,6 +152,6 @@ export const isAuthenticated = (req: Request, res: Response): void => {
 };
 
 export const logout = (req: Request, res: Response): void => {
-  res.clearCookie('token', { httpOnly: true, secure: true });
+  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: "none" });
   res.status(200).json({ message: 'Sesión cerrada exitosamente' });
 };

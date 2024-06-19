@@ -16,14 +16,22 @@ const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
+const allowedOrigins = ['http://localhost:4200', 'http://127.0.0.1:8080'];
+
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 
 conectarDB();
 
-// Rutas
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/posts', postRouter);

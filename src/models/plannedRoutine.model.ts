@@ -16,7 +16,7 @@ interface IPlannedRoutine extends Document {
 }
 
 const PlannedRoutineSchema: Schema = new Schema({
-  routineId: { type: Schema.Types.ObjectId, required: true },
+  routineId: { type: Schema.Types.ObjectId, required: true, ref: 'Routine' },
   date: { type: Date, required: true },
   completed: { type: Boolean, default: false },
   exercises: [{

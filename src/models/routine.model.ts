@@ -1,5 +1,4 @@
 import { Document, Schema, model, Types } from 'mongoose';
-import { ExerciseDocument } from './exercise.models';
 
 export interface IRoutine extends Document {
   name: string;

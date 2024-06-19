@@ -6,13 +6,20 @@ import { User } from '../models/user.model';
 dotenv.config();
 
 export const sendMail = async (req: Request, res: Response) => {
-  const { subject, message } = req.body;
-
-  // Usuarios con rol monitor o coordinador
-  // const to = "javircrc10@gmail.com";
+  const { userSubject, userMessage } = req.body;
+  const userId = (req as any).userId;
 
   const users = await User.find({ role: { $in: ['monitor', 'coordinator'] }, active: true }, 'email');
   const to = users.map(user => user.email).join(',');
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const subject = `Envio de pregunta de ${user.name}`;
+  const message = `El usuario ${user.name + " "  +user.lastName} y email ${user.email} envía una pregunta con el siguiente asunto ${userSubject} y mensaje:\n\n${userMessage}`;
+
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

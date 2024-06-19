@@ -97,13 +97,19 @@ export const deleteRoutineById = async (req: Request, res: Response) => {
 };
 
 export const sendRoutineRequestMail = async (req: Request, res: Response) => {
-  const { user, experiencia, detalles } = req.body;
+  const { experiencia, detalles } = req.body;
+  const userId = (req as any).userId;
 
   const users = await User.find({ role: { $in: ['monitor'] }, active: true }, 'email');
   const to = users.map(user => user.email).join(',');
 
-  const subject = `Solicitud de rutina de ${user}`;
-  const message = `El usuario ${user} con experiencia ${experiencia} solicita una rutina con los siguientes detalles:\n\n${detalles}`;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const subject = `Solicitud de rutina de ${user.name}`;
+  const message = `El usuario ${user.name + " "  +user.lastName} y email ${user.email} con experiencia ${experiencia} solicita una rutina con los siguientes detalles:\n\n${detalles}`;
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

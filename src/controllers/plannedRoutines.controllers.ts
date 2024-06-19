@@ -93,23 +93,26 @@ export const getPlannedRoutineById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid ID format' });
-    }
-
-    const plannedRoutine = await PlannedRoutine.findById(id).populate('exercises.exerciseId').lean();
+    const plannedRoutine = await PlannedRoutine.findById(id)
+      .populate('exercises.exerciseId')
+      .populate('routineId', 'name')
+      .lean();
     if (!plannedRoutine) {
       return res.status(404).json({ message: 'Planned routine not found' });
     }
 
-    //Darle una vuelta
     plannedRoutine.exercises = plannedRoutine.exercises.map((exerciseItem: any) => ({
       exerciseId: exerciseItem.exerciseId._id,
       exercise: exerciseItem.exerciseId,
       series: exerciseItem.series
     }));
 
-    res.status(200).json(plannedRoutine);
+    const routineName = (plannedRoutine.routineId as any)?.name || 'Unnamed Routine';
+
+    res.status(200).json({
+      ...plannedRoutine,
+      routineName: routineName
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error getting planned routine by ID', error });
